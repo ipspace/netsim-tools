@@ -48,13 +48,18 @@ class Provider:
   def get_root_template(self):
     return "Vagrantfile.j2"
 
+  def transform(self,topology):
+    pass
+
   def dump(self,topology):
     template_path = self.get_template_path()
+    self.transform(topology)
     print("\nVagrantfile using templates from %s" % os.path.relpath(template_path))
     print("======================================================")
     print(common.template(self.get_root_template(),topology,template_path))
 
   def create(self,topology,fname):
+    self.transform(topology)
     fname = self.get_output_name(fname,topology)
     with open(fname,"w") as output:
       output.write(common.template(self.get_root_template(),topology,self.get_template_path()))
