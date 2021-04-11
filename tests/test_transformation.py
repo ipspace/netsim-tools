@@ -10,10 +10,11 @@ import glob
 import pathlib
 import pytest
 
-import common
-import read_topology
-import augment.main
 import utils
+
+from netsim import common
+from netsim import read_topology
+from netsim import augment
 
 def run_test(fname,local_defaults="topology-defaults.yml"):
   topology = read_topology.load(fname,local_defaults,"../topology-defaults.yml")

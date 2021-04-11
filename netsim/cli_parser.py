@@ -3,7 +3,10 @@
 #
 import argparse
 import sys
-import common
+
+# Related modules
+# 
+from . import common
 
 def parse():
   parser = argparse.ArgumentParser(description='Create topology data from topology description')

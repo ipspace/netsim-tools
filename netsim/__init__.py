@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+#
+# Create expanded topology file, Ansible inventory, host vars, or Vagrantfile from
+# topology file
+#
+
+import sys
+import os
+import yaml
+import re
+from jinja2 import Environment, FileSystemLoader, Undefined, StrictUndefined, make_logging_undefined
+
+sys.path[0] = sys.path[0] + '/lib/create-topology'
+
+from . import common
+from . import cli_parser
+from . import read_topology
+from . import augment
+from . import inventory
+from . import provider
+
+LOGGING=False
+VERBOSE=False
+
+def dump_topology_data(topology,state):
+  print("%s topology data" % state)
+  print("===============================")
+  print(topology.to_yaml())
+
+def main():
+  args = cli_parser.parse()
+
+  path = os.path.dirname(os.path.realpath(__file__))
+  settings = path+"/topology-defaults.yml"
+  topology = read_topology.load(args.topology,args.defaults,settings)
+  if args.verbose:
+    dump_topology_data(topology,'Collected')
+  common.exit_on_error()
+
+  augment.main.transform(topology)
+  common.exit_on_error()
+  if args.vagrant:
+    if args.verbose:
+      provider.dump(topology,path)
+    else:
+      provider.create(topology,args.vagrant,path)
+
+  if args.xpand:
+    if args.verbose:
+      dump_topology_data(topology,'Augmented')
+    else:
+      augment.topology.create_topology_file(topology,args.xpand)
+
+  if args.inventory:
+    if args.verbose:
+      inventory.dump(topology)
+    else:
+      inventory.write(topology,args.inventory,args.hostvars)
+
+  if args.config:
+    inventory.config(args.config,args.inventory,path)

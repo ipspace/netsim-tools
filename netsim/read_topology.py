@@ -1,11 +1,13 @@
 #
 # Read topology and default settings files
 #
-import yaml
-import common
 import os
 import sys
+import yaml
 from box import Box
+
+# Related modules
+from . import common
 
 def read_yaml(fname):
   if not os.path.isfile(fname):

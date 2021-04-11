@@ -8,9 +8,12 @@ Topology-level transformation:
 '''
 
 import netaddr
-import common
 import os
+
 from box import Box
+
+# Related modules
+from .. import common
 
 topo_main_elements = ['addressing','defaults','links','module','name','nodes','provider']
 topo_internal_elements = ['input','includes']

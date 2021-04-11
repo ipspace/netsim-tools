@@ -47,12 +47,15 @@ parameters when the corresponding addressing parameteres are missing:
 * _p2p_ and _p2p_subnet_ defaults are used to create _p2p_ pool
 '''
 
-import netaddr
-import common
 import os
 import yaml
 import sys
+
+import netaddr
 from box import Box
+
+# Related modules
+from . import common
 
 def setup_pools(addrs = {},defaults = {}):
   legacy = Box({},default_box=True)

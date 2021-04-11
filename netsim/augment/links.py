@@ -3,13 +3,16 @@
 # from high-level topology
 #
 
-import netaddr
-import common
-import addressing
 import os
 import sys
+
+import netaddr
 import yaml
 from box import Box
+
+# Related modules
+from .. import common
+from .. import addressing
 
 link_attr_base = [ 'bridge','type','linkindex','role','name' ]
 link_attr_full = [ 'prefix','bandwidth' ]

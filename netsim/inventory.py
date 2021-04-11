@@ -5,8 +5,10 @@
 import yaml
 import os
 import sys
-import common
 from box import Box
+
+# Related modules
+from . import common
 
 forwarded_port_name = { 'ssh': 'ansible_port', }
 

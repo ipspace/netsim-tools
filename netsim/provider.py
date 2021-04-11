@@ -2,8 +2,10 @@
 # Create Vagrantfile from collected topology data
 #
 
-import common
 import os
+
+# Related modules
+from . import common
 
 def get_template_path(topology,path):
   return path + '/templates/provider/' + topology['provider']

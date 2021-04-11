@@ -3,12 +3,12 @@
 #
 
 import netaddr
-import common
-import addressing
 import os
-import augment.topology
-import augment.nodes
-import augment.links
+
+# Related modules
+from .. import common
+from .. import addressing
+from .. import augment
 
 '''
 adjust_modules: somewhat intricate multi-step config module adjustments

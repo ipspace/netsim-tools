@@ -7,8 +7,8 @@ Create detailed node-level data structures from topology
 '''
 
 import netaddr
-import common
-import addressing
+from .. import common
+from .. import addressing
 import os
 import yaml
 from box import Box
