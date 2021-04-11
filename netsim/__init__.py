@@ -28,9 +28,7 @@ def dump_topology_data(topology,state):
 def main():
   args = cli_parser.parse()
 
-  path = os.path.dirname(os.path.realpath(__file__))
-  settings = path+"/topology-defaults.yml"
-  topology = read_topology.load(args.topology,args.defaults,settings)
+  topology = read_topology.load(args.topology,args.defaults,"package:topology-defaults.yml")
   if args.verbose:
     dump_topology_data(topology,'Collected')
   common.exit_on_error()
@@ -57,4 +55,4 @@ def main():
       inventory.write(topology,args.inventory,args.hostvars)
 
   if args.config:
-    inventory.config(args.config,args.inventory,path)
+    inventory.config(args.config,args.inventory)

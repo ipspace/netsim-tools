@@ -1,6 +1,6 @@
 input:
-- topology.yml
-- ../topology-defaults.yml
+- topology-simple.yml
+- package:topology-defaults.yml
 links:
 - a_eos:
     ipv4: 172.16.0.4/24

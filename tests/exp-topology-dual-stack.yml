@@ -1,6 +1,6 @@
 input:
 - topology-dual-stack.yml
-- ../topology-defaults.yml
+- package:topology-defaults.yml
 links:
 - a_eos:
     ipv4: 10.2.0.4/26

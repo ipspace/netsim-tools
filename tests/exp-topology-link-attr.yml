@@ -1,6 +1,6 @@
 input:
 - topology-link-attr.yml
-- ../topology-defaults.yml
+- package:topology-defaults.yml
 links:
 - e1:
     ipv4: 10.1.0.1/30

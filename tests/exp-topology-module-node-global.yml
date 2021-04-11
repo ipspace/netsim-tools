@@ -1,6 +1,6 @@
 input:
 - topology-module-node-global.yml
-- ../topology-defaults.yml
+- package:topology-defaults.yml
 module:
 - ospf
 - bgp

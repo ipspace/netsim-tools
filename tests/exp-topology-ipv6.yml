@@ -1,6 +1,6 @@
 input:
 - topology-ipv6.yml
-- ../topology-defaults.yml
+- package:topology-defaults.yml
 links:
 - a_eos:
     ipv6: 2001:db8:1::4/64

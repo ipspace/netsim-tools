@@ -1,6 +1,6 @@
 input:
 - topology-nodes-strings.yml
-- ../topology-defaults.yml
+- package:topology-defaults.yml
 name: tests
 nodes:
 - box: cisco/iosv

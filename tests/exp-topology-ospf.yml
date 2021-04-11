@@ -1,6 +1,6 @@
 input:
 - topology-ospf.yml
-- ../topology-defaults.yml
+- package:topology-defaults.yml
 links:
 - a_eos:
     ipv4: 172.19.0.3/24

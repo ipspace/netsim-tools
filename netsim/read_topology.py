@@ -5,23 +5,38 @@ import os
 import sys
 import yaml
 from box import Box
+from importlib import resources
 
 # Related modules
 from . import common
 
-def read_yaml(fname):
-  if not os.path.isfile(fname):
-    if common.LOGGING or common.VERBOSE:
-      print("YAML file %s does not exist" % fname)
-    return None
-
-  try:
-    data = Box().from_yaml(filename=fname,default_box=True,box_dots=True,default_box_none_transform=False)
-  except:
-    common.fatal("Cannot read YAML from %s: %s " % (fname,str(sys.exc_info()[1])))
+#
+# Read YAML from file, package file, or string
+#
+def read_yaml(filename=None,string=None):
+  if string is not None:
+    try:
+      data = Box().from_yaml(yaml_string=string,default_box=True,box_dots=True,default_box_none_transform=False)
+    except:
+      common.fatal("Cannot parse YAML string: %s " % (str(sys.exc_info()[1])))
+  elif filename is None:
+    common.fatal("read_yaml: have no idea what to do")
+  elif "package:" in filename:
+    package = '.'.join(__name__.split('.')[:-1])
+    with resources.open_text(package,filename.replace("package:","")) as fid:
+      return read_yaml(string=fid.read())
+  else:
+    if not os.path.isfile(filename):
+      if common.LOGGING or common.VERBOSE:
+        print("YAML file %s does not exist" % filename)
+      return None
+    try:
+      data = Box().from_yaml(filename=filename,default_box=True,box_dots=True,default_box_none_transform=False)
+    except:
+      common.fatal("Cannot read YAML from %s: %s " % (filename,str(sys.exc_info()[1])))
 
   if common.LOGGING or common.VERBOSE:
-    print("Read YAML data from %s" % fname)
+    print("Read YAML data from %s" % (filename or "string"))
   return data
 
 def include_defaults(topo,fname):

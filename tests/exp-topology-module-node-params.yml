@@ -2,7 +2,7 @@ bgp:
   as: 65000
 input:
 - topology-module-node-params.yml
-- ../topology-defaults.yml
+- package:topology-defaults.yml
 module:
 - ospf
 - bgp

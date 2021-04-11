@@ -131,8 +131,8 @@ def write(data,fname,hostvars):
     write_yaml(inventory,fname,header)
     print("Created minimized Ansible inventory %s" % fname)
 
-def config(config_file,inventory_file,path):
+def config(config_file,inventory_file):
   with open(config_file,"w") as output:
-    output.write(common.template('ansible.cfg.j2',{ 'inventory': inventory_file },path + '/templates'))
+    output.write(common.template('ansible.cfg.j2',{ 'inventory': inventory_file or 'hosts.yml' },'templates'))
     output.close()
     print("Created Ansible configuration file: %s" % config_file)

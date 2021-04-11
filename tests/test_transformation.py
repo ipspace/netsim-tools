@@ -17,7 +17,7 @@ from netsim import read_topology
 from netsim import augment
 
 def run_test(fname,local_defaults="topology-defaults.yml"):
-  topology = read_topology.load(fname,local_defaults,"../topology-defaults.yml")
+  topology = read_topology.load(fname,local_defaults,"package:topology-defaults.yml")
   common.exit_on_error()
   augment.main.transform(topology)
   common.exit_on_error()

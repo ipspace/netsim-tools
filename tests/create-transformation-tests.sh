@@ -7,5 +7,5 @@
 #
 set -e
 for file in topology*yml; do
-  PYTHONPATH="../lib/create-topology" python3 create-transformation-test-case.py -t $file
+  PYTHONPATH="../" python3 create-transformation-test-case.py -t $file
 done
