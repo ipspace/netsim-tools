@@ -15,7 +15,7 @@ from box import Box
 # Related modules
 from .. import common
 
-topo_main_elements = ['addressing','defaults','links','module','name','nodes','provider']
+topo_main_elements = ['addressing','defaults','links','module','name','nodes','provider','Provider']
 topo_internal_elements = ['input','includes']
 
 def check_required_elements(topology):
@@ -58,6 +58,12 @@ def adjust_global_parameters(topology):
   if not topology.provider in providers:
     plist = ', '.join(providers.keys())
     common.fatal('Unknown virtualization provider %s. Supported providers are: %s' % (topology.provider,plist))
+
+  # Adjust defaults with provider-specific defaults
+  #
+  for k in ['devices','addressing']:
+    if k in topology.defaults.providers[topology.provider]:
+      topology.defaults[k] = topology.defaults[k] + topology.defaults.providers[topology.provider][k]
 
 '''
 adjust_modules: last phase of global module adjustments

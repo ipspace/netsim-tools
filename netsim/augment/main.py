@@ -9,6 +9,7 @@ import os
 from .. import common
 from .. import addressing
 from .. import augment
+from ..provider import Provider
 
 '''
 adjust_modules: somewhat intricate multi-step config module adjustments
@@ -22,6 +23,7 @@ def adjust_modules(topology):
   augment.nodes.merge_node_module_params(topology)
 
 def transform(topology):
+  topology.Provider = Provider.load(topology.provider,topology.defaults.providers[topology.provider])
   topology.setdefault('defaults',{})
   augment.topology.check_required_elements(topology)
   augment.topology.adjust_global_parameters(topology)
@@ -43,3 +45,4 @@ def transform(topology):
     augment.links.transform(topology.links,topology.defaults,ndict,topology.pools)
   common.exit_on_error()
   del topology.pools
+  del topology.Provider

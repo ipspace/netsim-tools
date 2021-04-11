@@ -57,7 +57,7 @@ def augment_mgmt_if(node,device_data,addrs):
 #
 # Add device (box) images from defaults
 #
-def augment_node_images(topology):
+def augment_node_provider_data(topology):
   provider = topology.provider
   devices = topology.defaults.devices
   if not devices:
@@ -68,6 +68,10 @@ def augment_node_images(topology):
     if not n.device:
       common.error('No device type specified for node %s and there is no default device type' % n.name)
       continue
+
+    for k,v in topology.defaults.devices[n.device].items():
+      if "provider_" in k:
+        n[k.replace("provider_","")] = v
 
     if n.box:
       continue
@@ -117,7 +121,7 @@ Main node transformation code
 * set management IP and MAC addresses
 '''
 def transform(topology,defaults,pools):
-  augment_node_images(topology)
+  augment_node_provider_data(topology)
 
   id = 0
   ndict = {}
@@ -147,6 +151,8 @@ def transform(topology,defaults,pools):
     augment_mgmt_if(n,device_data,topology.addressing.mgmt)
 
     ndict[n.name] = n
+    if "augment_node_data" in dir(topology.Provider):
+      topology.Provider.augment_node_data(n,topology)
 
   topology.nodes_map = ndict
   return ndict

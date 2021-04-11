@@ -36,7 +36,7 @@ def main():
   augment.main.transform(topology)
   common.exit_on_error()
   if args.provider is not None:
-    provider = Provider.load(topology.provider)
+    provider = Provider.load(topology.provider,topology.defaults.providers[topology.provider])
     if args.verbose:
       provider.dump(topology)
     else:

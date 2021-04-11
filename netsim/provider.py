@@ -11,11 +11,13 @@ import inspect
 from . import common
 
 class Provider:
-  def __init__(self,provider):
+  def __init__(self,provider,data):
     self.provider = provider
+    if 'template' in data:
+      self._default_template_name = data.template
 
   @classmethod
-  def load(self,provider):
+  def load(self,provider,data):
     module_name = '.'.join(__name__.split('.')[:-1])+".providers."+provider
     if common.VERBOSE:
       print("loading %s..." % module_name)
@@ -25,12 +27,12 @@ class Provider:
         if inspect.isclass(obj) and issubclass(obj,Provider):
           if common.VERBOSE:
             print("Found %s " % obj)
-          return obj(provider)
+          return obj(provider,data)
 
     except (ImportError, AttributeError):
       if common.VERBOSE:
         print("Failed to load provider-specific module")
-      return Provider(provider)
+      return Provider(provider,data)
 
   def get_template_path(self):
     return 'templates/provider/' + self.provider
@@ -45,8 +47,10 @@ class Provider:
 
     return "Vagrantfile"
   
+  _default_template_name = "Vagrantfile.j2"
+
   def get_root_template(self):
-    return "Vagrantfile.j2"
+    return self._default_template_name
 
   def transform(self,topology):
     pass

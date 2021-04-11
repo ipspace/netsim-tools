@@ -42,6 +42,9 @@ def add_node_interface(node,ifdata,defaults={}):
   if ifname_format:
     ifdata.ifname = ifname_format % ifindex
 
+  if "provider_interface_name" in defaults.devices[node.device]:
+    ifdata.provider_ifname = defaults.devices[node.device].provider_interface_name % ifindex
+
   node.links.append(ifdata)
   return len(node.links)
 
