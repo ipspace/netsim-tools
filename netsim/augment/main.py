@@ -23,10 +23,10 @@ def adjust_modules(topology):
   augment.nodes.merge_node_module_params(topology)
 
 def transform(topology):
-  topology.Provider = Provider.load(topology.provider,topology.defaults.providers[topology.provider])
   topology.setdefault('defaults',{})
   augment.topology.check_required_elements(topology)
   augment.topology.adjust_global_parameters(topology)
+  topology.Provider = Provider.load(topology.provider,topology.defaults.providers[topology.provider])
   common.exit_on_error()
 
   topology.nodes = augment.nodes.adjust_node_list(topology.nodes)
