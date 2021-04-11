@@ -1,14 +1,11 @@
 input:
-- topology-nodes-dictionary.yml
+- topology/input/nodes-strings.yml
 - package:topology-defaults.yml
-name: tests
+name: input
 nodes:
 - box: cisco/iosv
   device: iosv
-  edge: true
   id: 1
-  igp:
-  - ospf
   loopback:
     ipv4: 10.0.0.1/32
   mgmt:
@@ -26,16 +23,14 @@ nodes:
     ipv4: 192.168.121.102
     mac: 08-4F-A9-00-00-02
   name: e2
-- box: cisco/csr1000v
-  device: csr
+- box: cisco/iosv
+  device: iosv
   id: 3
-  igp:
-  - ospf
   loopback:
     ipv4: 10.0.0.3/32
   mgmt:
-    ifname: GigabitEthernet1
+    ifname: GigabitEthernet0/0
     ipv4: 192.168.121.103
     mac: 08-4F-A9-00-00-03
-  name: pe1
+  name: e3
 provider: libvirt

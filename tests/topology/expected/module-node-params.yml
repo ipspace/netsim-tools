@@ -1,7 +1,13 @@
+bgp:
+  as: 65000
 input:
-- topology-nodes-strings.yml
+- topology/input/module-node-params.yml
 - package:topology-defaults.yml
-name: tests
+module:
+- ospf
+- bgp
+- evpn
+name: input
 nodes:
 - box: cisco/iosv
   device: iosv
@@ -12,8 +18,16 @@ nodes:
     ifname: GigabitEthernet0/0
     ipv4: 192.168.121.101
     mac: 08-4F-A9-00-00-01
-  name: e1
-- box: cisco/iosv
+  module:
+  - ospf
+  name: r1
+  ospf:
+    area: 0.0.0.1
+    id: 17
+    process: 1
+- bgp:
+    as: 65000
+  box: cisco/iosv
   device: iosv
   id: 2
   loopback:
@@ -22,15 +36,11 @@ nodes:
     ifname: GigabitEthernet0/0
     ipv4: 192.168.121.102
     mac: 08-4F-A9-00-00-02
-  name: e2
-- box: cisco/iosv
-  device: iosv
-  id: 3
-  loopback:
-    ipv4: 10.0.0.3/32
-  mgmt:
-    ifname: GigabitEthernet0/0
-    ipv4: 192.168.121.103
-    mac: 08-4F-A9-00-00-03
-  name: e3
+  module:
+  - bgp
+  - evpn
+  name: r2
+ospf:
+  area: 0.0.0.0
+  process: 1
 provider: libvirt

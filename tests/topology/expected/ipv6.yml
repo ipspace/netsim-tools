@@ -1,10 +1,10 @@
 input:
-- topology-ipv6.yml
+- topology/input/ipv6.yml
 - package:topology-defaults.yml
 links:
 - a_eos:
     ipv6: 2001:db8:1::4/64
-  bridge: tests_1
+  bridge: input_1
   c_csr:
     ipv6: 2001:db8:1::2/64
   c_ios:
@@ -43,13 +43,13 @@ links:
   prefix:
     ipv6: 2001:db8:1:1::/64
   type: lan
-name: tests
+name: input
 nodes:
 - box: cisco/iosv
   device: iosv
   id: 1
   links:
-  - bridge: tests_1
+  - bridge: input_1
     ifindex: 1
     ifname: GigabitEthernet0/1
     ipv6: 2001:db8:1::1/64
@@ -92,7 +92,7 @@ nodes:
   device: csr
   id: 2
   links:
-  - bridge: tests_1
+  - bridge: input_1
     ifindex: 2
     ifname: GigabitEthernet2
     ipv6: 2001:db8:1::2/64
@@ -135,7 +135,7 @@ nodes:
   device: nxos
   id: 3
   links:
-  - bridge: tests_1
+  - bridge: input_1
     ifindex: 1
     ifname: Ethernet1/1
     ipv6: 2001:db8:1::3/64
@@ -177,7 +177,7 @@ nodes:
   device: eos
   id: 4
   links:
-  - bridge: tests_1
+  - bridge: input_1
     ifindex: 1
     ifname: Ethernet1
     ipv6: 2001:db8:1::4/64
@@ -219,7 +219,7 @@ nodes:
   device: vsrx
   id: 5
   links:
-  - bridge: tests_1
+  - bridge: input_1
     ifindex: 0
     ifname: ge-0/0/0
     ipv6: 2001:db8:1::5/64

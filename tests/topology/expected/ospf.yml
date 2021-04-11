@@ -1,11 +1,11 @@
 input:
-- topology-ospf.yml
+- topology/input/ospf.yml
 - package:topology-defaults.yml
 links:
 - a_eos:
     ipv4: 172.19.0.3/24
     ipv6: 2001:db8:1::3/64
-  bridge: tests_1
+  bridge: input_1
   c_csr:
     ipv4: 172.19.0.2/24
     ipv6: 2001:db8:1::2/64
@@ -119,7 +119,7 @@ links:
   role: core
   type: p2p
   unnumbered: true
-- bridge: tests_8
+- bridge: input_8
   c_nxos:
     ipv4: 172.19.1.1/24
     ipv6: 2001:db8:1:1::1/64
@@ -132,7 +132,7 @@ links:
 - a_eos:
     ipv4: 172.19.2.3/24
     ipv6: 2001:db8:1:2::3/64
-  bridge: tests_9
+  bridge: input_9
   linkindex: 9
   prefix:
     ipv4: 172.19.2.0/24
@@ -141,13 +141,13 @@ links:
   type: stub
 module:
 - ospf
-name: tests
+name: input
 nodes:
 - box: cisco/nexus9300v
   device: nxos
   id: 1
   links:
-  - bridge: tests_1
+  - bridge: input_1
     ifindex: 1
     ifname: Ethernet1/1
     ipv4: 172.19.0.1/24
@@ -212,7 +212,7 @@ nodes:
     role: core
     type: p2p
     unnumbered: true
-  - bridge: tests_8
+  - bridge: input_8
     ifindex: 5
     ifname: Ethernet1/5
     ipv4: 172.19.1.1/24
@@ -235,7 +235,7 @@ nodes:
   device: csr
   id: 2
   links:
-  - bridge: tests_1
+  - bridge: input_1
     ifindex: 2
     ifname: GigabitEthernet2
     ipv4: 172.19.0.2/24
@@ -314,7 +314,7 @@ nodes:
   device: eos
   id: 3
   links:
-  - bridge: tests_1
+  - bridge: input_1
     ifindex: 1
     ifname: Ethernet1
     ipv4: 172.19.0.3/24
@@ -379,7 +379,7 @@ nodes:
     role: core
     type: p2p
     unnumbered: true
-  - bridge: tests_9
+  - bridge: input_9
     ifindex: 5
     ifname: Ethernet5
     ipv4: 172.19.2.3/24
@@ -402,7 +402,7 @@ nodes:
   device: vsrx
   id: 4
   links:
-  - bridge: tests_1
+  - bridge: input_1
     ifindex: 0
     ifname: ge-0/0/0
     ipv4: 172.19.0.4/24

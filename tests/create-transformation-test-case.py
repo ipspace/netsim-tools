@@ -42,7 +42,7 @@ def main():
   netsim.augment.main.transform(topology)
   netsim.common.exit_on_error()
 
-  dfname = args.xpand or ("exp-"+args.topology)
+  dfname = args.xpand or (args.topology.replace("/input/","/expected/"))
   create_expected_results_file(topology,dfname)
 
 main()

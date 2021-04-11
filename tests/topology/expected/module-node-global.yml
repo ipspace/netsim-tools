@@ -1,10 +1,10 @@
 input:
-- topology-module-node-only.yml
+- topology/input/module-node-global.yml
 - package:topology-defaults.yml
 module:
 - ospf
 - bgp
-name: tests
+name: input
 nodes:
 - box: cisco/iosv
   device: iosv

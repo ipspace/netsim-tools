@@ -1,23 +1,21 @@
 input:
-- topology-module-node-global.yml
+- topology/input/nodes-dictionary.yml
 - package:topology-defaults.yml
-module:
-- ospf
-- bgp
-name: tests
+name: input
 nodes:
 - box: cisco/iosv
   device: iosv
+  edge: true
   id: 1
+  igp:
+  - ospf
   loopback:
     ipv4: 10.0.0.1/32
   mgmt:
     ifname: GigabitEthernet0/0
     ipv4: 192.168.121.101
     mac: 08-4F-A9-00-00-01
-  module:
-  - ospf
-  name: r1
+  name: e1
 - box: cisco/iosv
   device: iosv
   id: 2
@@ -27,7 +25,17 @@ nodes:
     ifname: GigabitEthernet0/0
     ipv4: 192.168.121.102
     mac: 08-4F-A9-00-00-02
-  module:
-  - bgp
-  name: r2
+  name: e2
+- box: cisco/csr1000v
+  device: csr
+  id: 3
+  igp:
+  - ospf
+  loopback:
+    ipv4: 10.0.0.3/32
+  mgmt:
+    ifname: GigabitEthernet1
+    ipv4: 192.168.121.103
+    mac: 08-4F-A9-00-00-03
+  name: pe1
 provider: libvirt

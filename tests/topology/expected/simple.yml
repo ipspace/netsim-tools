@@ -1,10 +1,10 @@
 input:
-- topology-simple.yml
+- topology/input/simple.yml
 - package:topology-defaults.yml
 links:
 - a_eos:
     ipv4: 172.16.0.4/24
-  bridge: tests_1
+  bridge: input_1
   c_csr:
     ipv4: 172.16.0.2/24
   c_ios:
@@ -43,13 +43,13 @@ links:
   prefix:
     ipv4: 172.16.1.0/24
   type: lan
-name: tests
+name: input
 nodes:
 - box: cisco/iosv
   device: iosv
   id: 1
   links:
-  - bridge: tests_1
+  - bridge: input_1
     ifindex: 1
     ifname: GigabitEthernet0/1
     ipv4: 172.16.0.1/24
@@ -92,7 +92,7 @@ nodes:
   device: csr
   id: 2
   links:
-  - bridge: tests_1
+  - bridge: input_1
     ifindex: 2
     ifname: GigabitEthernet2
     ipv4: 172.16.0.2/24
@@ -135,7 +135,7 @@ nodes:
   device: nxos
   id: 3
   links:
-  - bridge: tests_1
+  - bridge: input_1
     ifindex: 1
     ifname: Ethernet1/1
     ipv4: 172.16.0.3/24
@@ -177,7 +177,7 @@ nodes:
   device: eos
   id: 4
   links:
-  - bridge: tests_1
+  - bridge: input_1
     ifindex: 1
     ifname: Ethernet1
     ipv4: 172.16.0.4/24
@@ -219,7 +219,7 @@ nodes:
   device: vsrx
   id: 5
   links:
-  - bridge: tests_1
+  - bridge: input_1
     ifindex: 0
     ifname: ge-0/0/0
     ipv4: 172.16.0.5/24
