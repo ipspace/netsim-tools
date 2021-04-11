@@ -16,8 +16,8 @@ def parse():
                   help='Local topology defaults file')
   parser.add_argument('-x','--expanded', dest='xpand', action='store', nargs='?', const='topology-expanded.yml',
                   help='Create expanded topology file')
-  parser.add_argument('-g','--vagrantfile', dest='vagrant', action='store', nargs='?', const='Vagrantfile',
-                  help='Create Vagrantfile')
+  parser.add_argument('-p','-g','--vagrantfile', dest='provider', action='store', nargs='?', const='',
+                  help='Create provider-specific configuration file (default: Vagrantfile)')
   parser.add_argument('-i','--inventory', dest='inventory', action='store', nargs='?', const='hosts.yml',
                   help='Create Ansible inventory file, default hosts.yml')
   parser.add_argument('-c','--config', dest='config', action='store', nargs='?', const='ansible.cfg',

@@ -3,21 +3,60 @@
 #
 
 import os
+import sys
+import importlib
+import inspect
 
 # Related modules
 from . import common
 
-def get_template_path(topology,path):
-  return path + '/templates/provider/' + topology['provider']
+class Provider:
+  def __init__(self,provider):
+    self.provider = provider
 
-def dump(topology,path):
-  template_path = get_template_path(topology,path)
-  print("\nVagrantfile using templates from %s" % os.path.relpath(template_path))
-  print("======================================================")
-  print(common.template('Vagrantfile.j2',topology,template_path))
+  @classmethod
+  def load(self,provider):
+    module_name = '.'.join(__name__.split('.')[:-1])+".providers."+provider
+    if common.VERBOSE:
+      print("loading %s..." % module_name)
+    try:
+      module = importlib.import_module(module_name)
+      for name,obj in inspect.getmembers(module):
+        if inspect.isclass(obj) and issubclass(obj,Provider):
+          if common.VERBOSE:
+            print("Found %s " % obj)
+          return obj(provider)
 
-def create(topology,fname,path):
-  with open(fname,"w") as output:
-    output.write(common.template('Vagrantfile.j2',topology,get_template_path(topology,path)))
-    output.close()
-    print("Created Vagrantfile: %s" % fname)
+    except (ImportError, AttributeError):
+      if common.VERBOSE:
+        print("Failed to load provider-specific module")
+      return Provider(provider)
+
+  def get_template_path(self):
+    return 'templates/provider/' + self.provider
+
+  def get_output_name(self,fname,topology):
+    if fname:
+      return fname
+
+    fname = topology.defaults.providers[self.provider].config
+    if fname:
+      return fname
+
+    return "Vagrantfile"
+  
+  def get_root_template(self):
+    return "Vagrantfile.j2"
+
+  def dump(self,topology):
+    template_path = self.get_template_path()
+    print("\nVagrantfile using templates from %s" % os.path.relpath(template_path))
+    print("======================================================")
+    print(common.template(self.get_root_template(),topology,template_path))
+
+  def create(self,topology,fname):
+    fname = self.get_output_name(fname,topology)
+    with open(fname,"w") as output:
+      output.write(common.template(self.get_root_template(),topology,self.get_template_path()))
+      output.close()
+      print("Created provider configuration file: %s" % fname)

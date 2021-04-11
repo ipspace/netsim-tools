@@ -4,7 +4,7 @@
 import sys
 import os
 import warnings
-from jinja2 import Environment, FileSystemLoader, Undefined, StrictUndefined, make_logging_undefined
+from jinja2 import Environment, FileSystemLoader, PackageLoader, Undefined, StrictUndefined, make_logging_undefined
 from box import Box
 
 LOGGING=False
@@ -41,7 +41,7 @@ def exit_on_error():
     fatal('Cannot proceed beyond this point due to errors, exiting')
 
 def template(j2,data,path):
-  ENV = Environment(loader=FileSystemLoader(path), \
+  ENV = Environment(loader=PackageLoader('netsim',path), \
           trim_blocks=True,lstrip_blocks=True, \
           undefined=make_logging_undefined(base=StrictUndefined))
   template = ENV.get_template(j2)
@@ -55,6 +55,7 @@ def null_to_string(d):
       d[k] = ""
 
 def set_verbose():
+  global VERBOSE
   VERBOSE=True
 
 def print_verbose(t):

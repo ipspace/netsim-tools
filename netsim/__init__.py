@@ -10,14 +10,12 @@ import yaml
 import re
 from jinja2 import Environment, FileSystemLoader, Undefined, StrictUndefined, make_logging_undefined
 
-sys.path[0] = sys.path[0] + '/lib/create-topology'
-
 from . import common
 from . import cli_parser
 from . import read_topology
 from . import augment
 from . import inventory
-from . import provider
+from .provider import Provider
 
 LOGGING=False
 VERBOSE=False
@@ -39,11 +37,12 @@ def main():
 
   augment.main.transform(topology)
   common.exit_on_error()
-  if args.vagrant:
+  if args.provider is not None:
+    provider = Provider.load(topology.provider)
     if args.verbose:
-      provider.dump(topology,path)
+      provider.dump(topology)
     else:
-      provider.create(topology,args.vagrant,path)
+      provider.create(topology,args.provider)
 
   if args.xpand:
     if args.verbose:
