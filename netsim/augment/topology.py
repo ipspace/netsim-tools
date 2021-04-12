@@ -93,6 +93,7 @@ def create_topology_file(topology,fname):
   # This should create a deep copy
   #
   topo_copy = Box(topology)
+  topo_copy.pop("nodes_map")
 
   # Remove PFX generators from addressing section
   #
