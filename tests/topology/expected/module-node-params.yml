@@ -27,6 +27,7 @@ nodes:
     process: 1
 - bgp:
     as: 65000
+    neighbors: []
   box: cisco/iosv
   device: iosv
   id: 2
