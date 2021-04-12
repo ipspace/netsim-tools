@@ -24,7 +24,9 @@ interface {{ mgmt.ifname|default('GigabitEthernet0/0') }}
 interface {{ l.ifname }}
  no shutdown
 {% if l.name is defined %}
- description {{ l.name }}
+ description {{ l.name }}{{ " ["+l.role+"]" if l.role is defined else "" }}
+{% elif l.type|default("") == "stub" %}
+ description Stub interface
 {% endif %}
 {% if l.ipv4 is defined %}
  ip address {{ l.ipv4|ipaddr('address') }} {{ l.ipv4|ipaddr('netmask') }}
