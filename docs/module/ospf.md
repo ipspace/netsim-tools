@@ -14,7 +14,7 @@ You can specify node parameters as global values (top-level topology elements) o
 * **ospf.cost** -- OSPF cost
 * **ospf.area** -- OSPF area. Use on ABRs; node-level OSPF area is recommended for intra-area routers.
 
-**Note:** Per-link areas are currently not implemented in Junos configuration template. Please feel free to fix the configuration template and submit a pull request.
+**Note:** the same parameters can be specified for individual link nodes.
 
 ### Other Parameters
 
@@ -22,6 +22,11 @@ Link type is used to set OSPF network type:
 
 * *P2P link* ⇒ **point-to-point** network
 * Any other link type ⇒ **broadcast** network
+* *Stub link* ⇒ passive interface
+
+Stub links could have exactly one device attached to them. To create multi-route stub links, use **role: stub** link attribute.
+
+External links (with **role: external**) and management interfaces are excluded from the OSPF process.
 
 ## Example
 
@@ -80,11 +85,21 @@ links:
     area: 0.0.0.1
 ```
 
+Alternatively, you could specify the OSPF area just for R2 (as R3 is already in area 1):
+
+```
+links:
+- r2:
+    ospf:
+      area: 0.0.0.1
+  r3:
+```
+
 **Interesting details**: 
 
 * The default value for interface OSPF area is the node OSPF area (specified in configuration template).
-* The default value for node OSPF area is the global OSPF area (which is defined in **all** Ansible inventory group).
-* Due to the propagation of default values, the OSPF area for R2-R3 link would be area 0 on R2 and area 1 on R3. The OSPF area thus needs to be specified within link definition.
+* The default value for node OSPF area is the global OSPF area.
+* Due to the propagation of default values, the OSPF area for R2-R3 link would be area 0 on R2 and area 1 on R3. The OSPF area thus needs to be specified within link definition, or within an individual node connected to a link.
 
 ### Resulting Device Configurations
 
