@@ -32,7 +32,10 @@ topo_to_host_skip = [ 'name','device' ]
 def ansible_inventory_host(node,defaults):
   host = Box({})
   for (node_key,inv_key) in topo_to_host.items():
-    value = node[node_key]
+    if "." in node_key:
+      value = node[node_key]
+    else:
+      value = node.get(node_key,None)
     if value:
       host[inv_key] = value
 
