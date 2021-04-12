@@ -24,7 +24,7 @@ Link type is used to set OSPF network type:
 * Any other link type ⇒ **broadcast** network
 * *Stub link* ⇒ passive interface
 
-Stub links could have exactly one device attached to them. To create multi-route stub links, use **role: stub** link attribute.
+Stub links must have exactly one device attached to them. To create multi-router stub links, use **role: stub** link attribute.
 
 External links (with **role: external**) and management interfaces are excluded from the OSPF process.
 
