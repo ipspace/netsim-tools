@@ -151,8 +151,7 @@ def transform(topology,defaults,pools):
     augment_mgmt_if(n,device_data,topology.addressing.mgmt)
 
     ndict[n.name] = n
-    if "augment_node_data" in dir(topology.Provider):
-      topology.Provider.augment_node_data(n,topology)
+    topology.Provider.call("augment_node_data",n,topology)
 
   topology.nodes_map = ndict
   return ndict
