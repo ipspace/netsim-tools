@@ -9,7 +9,8 @@ import os
 from .. import common
 from .. import addressing
 from .. import augment
-from ..provider import Provider
+from ..providers import Provider
+from .. import modules
 
 '''
 adjust_modules: somewhat intricate multi-step config module adjustments
@@ -43,6 +44,8 @@ def transform(topology):
   common.exit_on_error()
   if 'links' in topology:
     augment.links.transform(topology.links,topology.defaults,ndict,topology.pools)
+
+  modules.augment_node_data(topology)
   common.exit_on_error()
   del topology.pools
   del topology.Provider
