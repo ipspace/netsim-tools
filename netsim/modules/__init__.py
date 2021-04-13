@@ -1,6 +1,6 @@
 #
 # Dynamic module transformation framework
-# 
+#
 # Individual configuration modules are defined as Python files within this directory inheriting
 # Module class and adding transformation methods
 #
@@ -9,6 +9,7 @@ import os
 import sys
 import importlib
 import inspect
+from box import Box
 
 # Related modules
 from .. import common
@@ -68,7 +69,14 @@ def adjust_global_modules(topology):
   topology.module = list(mod_dict.keys())
   for m in topology.module:
     if topology.defaults.get(m):
-      topology[m] = topology.defaults[m] + topology[m]
+      default_copy = Box(topology.defaults[m])
+
+      if 'no_propagate' in default_copy:
+        for remove_key in default_copy.no_propagate:
+          default_copy.pop(remove_key,None)
+        default_copy.pop('no_propagate')
+
+      topology[m] = default_copy + topology[m]
 
 '''
 adjust_modules: somewhat intricate multi-step config module adjustments
@@ -108,7 +116,6 @@ def link_transform(method,topology):
   global mod_load
 
   rebuild_nodes_map(topology)
-
   for l in topology.get("links",[]):
     mod_list = {}
     for n in l.keys():
@@ -117,4 +124,5 @@ def link_transform(method,topology):
       mod_list.update({ m: None for m in topology.nodes_map[n].get("module",[]) })
     for m in mod_list.keys():
       if not mod_load.get(m):
-        mod_load[m].call("link_"+method,l,topology)
+        mod_load[m] = Module.load(m,topology.get(m))
+      mod_load[m].call("link_"+method,l,topology)
