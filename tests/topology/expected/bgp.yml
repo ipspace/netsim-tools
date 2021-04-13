@@ -453,7 +453,9 @@ nodes:
     remote_ifindex: 3
     role: external
     type: p2p
-  - bridge: input_7
+  - bgp:
+      advertise: true
+    bridge: input_7
     ifindex: 2
     ifname: GigabitEthernet0/2
     ipv4: 172.16.0.5/24
@@ -496,7 +498,9 @@ nodes:
     remote_ifindex: 3
     role: external
     type: p2p
-  - bridge: input_8
+  - bgp:
+      advertise: true
+    bridge: input_8
     ifindex: 2
     ifname: GigabitEthernet0/2
     ipv4: 172.16.1.6/24

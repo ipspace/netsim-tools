@@ -69,6 +69,17 @@ class BGP(Module):
         if neighbor.bgp.get("as") and neighbor.bgp.get("as") != node.bgp.get("as"):
           node.bgp.neighbors.append(bgp_neighbor(neighbor,ngb_ifdata,'ebgp',None))
 
+    # Set bgp.advertise flag on stub links
+    #
+    stub_roles = topology.bgp.get("advertise_roles",None) or topology.defaults.bgp.get("advertise_roles",None)
+    if stub_roles:
+      for l in node.get("links",[]):
+        if "bgp" in l:
+          if "advertise" in l.bgp:
+            continue
+        if l.get("type",None) in stub_roles or l.get("role",None) in stub_roles:
+          l.bgp.advertise = True
+
   """
   Set link role based on BGP nodes attached to the link.
 

@@ -19,7 +19,7 @@ router bgp {{ bgp.as }}
   network {{ loopback.ipv4 }}
 {% endif %}
 !
-{% for l in links|default([]) if (l.type|default("") == "stub" or "stub" in l.role|default("")) and l.ipv4 is defined %}
+{% for l in links|default([]) if l.bgp.advertise|default("") and l.ipv4 is defined %}
   network {{ l.ipv4|ipaddr('0') }}
 {% endfor %}
 !
