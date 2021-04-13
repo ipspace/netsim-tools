@@ -1,6 +1,12 @@
 Release notes
 =============
 
+2021-XX-XX (`release 0.6 <https://github.com/ipspace/netsim-tools/releases/tag/release_0.6>`_)
+  * BGP configuration module
+  * OSPF configuration improvements: external links and passive interfaces
+
+  :doc:`More details <release/0.6>`
+
 2021-04-11 (`release 0.5 <https://github.com/ipspace/netsim-tools/releases/tag/release_0.5>`_)
   * containerlab support
   * Flexible virtualization provider framework
@@ -50,6 +56,7 @@ Release notes
    :caption: Individual release notes
    :maxdepth: 2
 
+   release/0.6.md
    release/0.5.md
    release/0.4.md
    release/0.3.md

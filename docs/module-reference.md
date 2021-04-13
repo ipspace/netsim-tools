@@ -6,5 +6,6 @@ The following configuration modules are included in **netsim-tools** distributio
 .. toctree::
    :maxdepth: 2
 
+   module/bgp.md
    module/ospf.md
 ```
