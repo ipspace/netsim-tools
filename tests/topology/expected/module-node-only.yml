@@ -18,7 +18,10 @@ nodes:
   module:
   - ospf
   name: r1
-- box: cisco/iosv
+- bgp:
+    as: 65000
+    neighbors: []
+  box: cisco/iosv
   device: iosv
   id: 2
   loopback:
