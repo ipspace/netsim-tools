@@ -44,7 +44,7 @@ providers:
         mgmt_if: Management0
         provider_kind: ceos
         image:
-          clab: ceos:4.25.0F
+          clab: ceos:4.25.1F
         group_vars:
           ansible_user: admin
           ansible_ssh_pass: admin
