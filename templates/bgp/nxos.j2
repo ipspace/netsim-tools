@@ -18,7 +18,9 @@ router bgp {{ bgp.as }}
 {%   endif %}
   address-family ipv4 unicast
 {%   if n.type == 'ibgp' %}
+{%   if bgp.next_hop_self is defined and bgp.next_hop_self %}
    next-hop-self
+{%     endif %}
 {%     if bgp.rr|default('') and not n.rr|default('') %}
    route-reflector-client
 {%     endif %}
