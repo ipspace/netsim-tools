@@ -92,25 +92,10 @@ def augment_node_provider_data(topology):
 
     n.box = box
 
-# Set default list of modules for nodes without specific module list
+# Rebuild nodes-by-name dict
 #
-def augment_node_module(topology):
-  if not 'module' in topology:
-    return
-
-  module = topology['module']
-  for n in topology.nodes:
-    if not 'module' in n:
-      n.module = module
-
-# Merge global module parameters with per-node module parameters
-#
-def merge_node_module_params(topology):
-  for n in topology.nodes:
-    if 'module' in n:
-      for m in n.module:
-        if m in topology:
-          n[m] = topology[m] + n[m]
+def rebuild_nodes_map(topology):
+  topology.nodes_map = { n.name : n for n in topology.get('nodes',[]) }
 
 '''
 Main node transformation code

@@ -36,9 +36,9 @@ def bgp_neighbor(n,intf,ctype,remote_rr):
 
 class BGP(Module):
 
-  def augment_node_data(self,node,topology):
+  def node_post_transform(self,node,topology):
     if not "bgp" in node:
-      return
+      common.error("Node %s has BGP module enabled but no BGP parameters" % node.name)
     check_bgp_parameters(node)
     rrlist = find_bgp_rr(node.bgp.get("as"),topology)
     node.bgp.neighbors = []
