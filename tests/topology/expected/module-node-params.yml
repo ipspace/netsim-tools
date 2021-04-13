@@ -1,5 +1,6 @@
 bgp:
   as: 65000
+  next_hop_self: true
 input:
 - topology/input/module-node-params.yml
 - package:topology-defaults.yml
@@ -28,6 +29,7 @@ nodes:
 - bgp:
     as: 65000
     neighbors: []
+    next_hop_self: true
   box: cisco/iosv
   device: iosv
   id: 2

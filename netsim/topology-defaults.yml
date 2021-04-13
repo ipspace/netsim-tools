@@ -17,6 +17,13 @@ addressing:
     start: 100
     mac: 08-4F-A9-00-00-00
 
+# Built-in module defaults
+#
+bgp:
+  ebgp_role: external
+  no_propagate: [ ebgp_role ]
+  next_hop_self: true
+
 #
 # Provider defaults
 #

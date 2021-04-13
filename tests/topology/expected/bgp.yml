@@ -1,5 +1,6 @@
 bgp:
   as: 65000
+  next_hop_self: true
 input:
 - topology/input/bgp.yml
 - package:topology-defaults.yml
@@ -166,6 +167,7 @@ nodes:
       ipv6: 2001:db8:0:4::1
       name: pe2
       type: ibgp
+    next_hop_self: true
     rr: true
   box: cisco/iosv
   device: iosv
@@ -229,6 +231,7 @@ nodes:
       ipv6: 2001:db8:0:4::1
       name: pe2
       type: ibgp
+    next_hop_self: true
     rr: true
   box: cisco/iosv
   device: iosv
@@ -292,6 +295,7 @@ nodes:
       ipv4: 172.31.0.1
       name: e1
       type: ebgp
+    next_hop_self: true
   box: cisco/iosv
   device: iosv
   id: 3
@@ -367,6 +371,7 @@ nodes:
       ipv4: 172.31.0.5
       name: e2
       type: ebgp
+    next_hop_self: true
   box: cisco/iosv
   device: iosv
   id: 4
@@ -430,6 +435,7 @@ nodes:
       ipv4: 172.31.0.2
       name: pe1
       type: ebgp
+    next_hop_self: true
   box: cisco/iosv
   device: iosv
   id: 5
@@ -472,6 +478,7 @@ nodes:
       ipv4: 172.31.0.6
       name: pe2
       type: ebgp
+    next_hop_self: true
   box: cisco/iosv
   device: iosv
   id: 6

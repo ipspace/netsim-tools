@@ -68,3 +68,24 @@ class BGP(Module):
           continue
         if neighbor.bgp.get("as") and neighbor.bgp.get("as") != node.bgp.get("as"):
           node.bgp.neighbors.append(bgp_neighbor(neighbor,ngb_ifdata,'ebgp',None))
+
+  """
+  Set link role based on BGP nodes attached to the link.
+
+  If the nodes belong to at least two autonomous systems, and the ebgp_role
+  variable is set, set the link role to ebgp_role
+  """
+  def link_pre_transform(self,link,topology):
+    ebgp_role = topology.bgp.get("ebgp_role",None) or topology.defaults.bgp.get("ebgp_role",None)
+    if not ebgp_role:
+      return
+
+    as_set = {}
+    for n in link.keys():
+      if n in topology.nodes_map:
+        if "bgp" in topology.nodes_map[n]:
+          node_as = topology.nodes_map[n].bgp.get("as")
+        as_set[node_as] = True
+
+    if len(as_set) > 1 and not link.get("role"):
+      link.role = ebgp_role

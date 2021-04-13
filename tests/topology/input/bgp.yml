@@ -43,11 +43,7 @@ links:
 - rr1-pe2
 - rr2-pe1
 - rr2-pe2
-- pe1:
-  e1:
-  role: external
-- pe2:
-  e2:
-  role: external
+- pe1-e1
+- pe2-e2
 - e1:
 - e2:
