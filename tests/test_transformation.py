@@ -9,6 +9,7 @@ import os
 import glob
 import pathlib
 import pytest
+import difflib
 
 import utils
 
@@ -32,6 +33,12 @@ def test_transformation_cases():
     result = utils.transformation_results_yaml(topology)
     exp_test_case = "topology/expected/"+os.path.basename(test_case)
     expected = pathlib.Path(exp_test_case).read_text()
+    if result != expected:
+      sys.stdout.writelines(
+        difflib.context_diff(
+          expected.splitlines(keepends=True),
+          result.splitlines(keepends=True),
+          fromfile='expected',tofile='result'))
     assert result == expected
     print("... succeeded, string length = %d" % len(result))
 
