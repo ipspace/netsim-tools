@@ -1,7 +1,7 @@
 {% set pid = ospf.process|default(1) %}
 {% set area = ospf.area|default("0.0.0.0") %}
 router ospf {{ pid }}
-{% for l in links|default([]) if l.type|default("") == "stub" or "stub" in l.role|default("") %}
+{% for l in links|default([]) if l.type|default("") == "stub" or l.role|default("NONE") in ["stub","passive"] %}
  passive-interface {{ l.ifname }}
 {% endfor %}
 !

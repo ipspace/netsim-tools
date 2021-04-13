@@ -17,7 +17,7 @@ protocols {
 {%     if l.type|default("") == "p2p" %}
         interface-type p2p;
 {%     endif %}
-{%     if l.type|default("") == "stub" or "stub" in l.role|default("") %}
+{%     if l.type|default("") == "stub" or l.role|default("NONE") in ["stub","passive"] %}
         passive;
 {%     endif %}
 {%     if l.ospf.cost is defined %}

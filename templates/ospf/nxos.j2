@@ -19,7 +19,7 @@ interface {{ l.ifname }}
 {%     if l.ospf.cost is defined %}
  ip ospf cost {{ l.ospf.cost }}
 {%     endif %}
-{%     if l.type|default("") == "stub" or "stub" in l.role|default("") %}
+{%     if l.type|default("") == "stub" or l.role|default("NONE") in ["stub","passive"] %}
  ip ospf passive-interface
 {%     endif %}
 {%   endif %}

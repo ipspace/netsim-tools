@@ -2,7 +2,7 @@
 {% set area = ospf.area|default("0.0.0.0") %}
 router ospf {{ pid }}
  interface unnumbered hello mask tx 0.0.0.0
-{% for l in links|default([]) if l.type|default("") == "stub" or "stub" in l.role|default("") %}
+{% for l in links|default([]) if l.type|default("") == "stub" or l.role|default("NONE") in ["stub","passive"] %}
  passive-interface {{ l.ifname }}
 {% endfor %}
 !

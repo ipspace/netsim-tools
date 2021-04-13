@@ -24,9 +24,19 @@ Link type is used to set OSPF network type:
 * Any other link type ⇒ **broadcast** network
 * *Stub link* ⇒ passive interface
 
-Stub links must have exactly one device attached to them. To create multi-router stub links, use **role: stub** link attribute.
+Stub links must have exactly one device attached to them. To create multi-router stub links, use **role: stub** link attribute (see below).
 
-External links (with **role: external**) and management interfaces are excluded from the OSPF process.
+### Using Link Roles
+
+Link roles are used together with link types to decide whether to include an interface in an OSPF process, and whether to make an interface passive:
+
+* External links (links with **role: external**) are not included in the OSPF process. 
+* Links with **role** set to **stub** or **passive** are configured as *passive* OSPF interfaces.
+
+**Notes:** 
+
+* Link role could be set by the BGP module -- links with devices from different AS numbers attached to them get a role specified in **defaults.bgp.ebgp_role** parameter. The system default value of that parameter is **external**, making inter-AS links excluded from the OSPF process.
+* Management interfaces are never added to the OSPF process. They are not in the set of device links and thus not considered in the OSPF configuration template.
 
 ## Example
 
