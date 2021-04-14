@@ -22,17 +22,21 @@ def find_bgp_rr(bgp_as,topology):
       rrlist.append(n)
   return rrlist
 
-def bgp_neighbor(n,intf,ctype,remote_rr):
-  ngb = Box({},default_box=True,box_dots=True)
+def bgp_neighbor(n,intf,ctype,extra_data={}):
+  ngb = Box(extra_data,default_box=True,box_dots=True)
   ngb.name = n.name
   ngb["as"] = n.bgp.get("as")
   ngb["type"] = ctype
-  if remote_rr:
-    ngb.rr = True
   for af in ['ipv4','ipv6']:
     if af in intf:
       ngb[af] = str(netaddr.IPNetwork(intf[af]).ip)
   return ngb
+
+def get_neighbor_rr(n):
+  if "rr" in n.get("bgp"):
+    return { "rr" : n.bgp.rr }
+
+  return {}
 
 class BGP(Module):
 
@@ -49,14 +53,14 @@ class BGP(Module):
       for n in topology.nodes:
         if "bgp" in n:
           if n.bgp.get("as") == node.bgp.get("as") and n.name != node.name:
-            node.bgp.neighbors.append(bgp_neighbor(n,n.loopback,'ibgp',n.bgp.get("rr")))
+            node.bgp.neighbors.append(bgp_neighbor(n,n.loopback,'ibgp',get_neighbor_rr(n)))
     #
     # The node is not a route reflector, and we have a non-empty RR list
     # We need BGP sessions with the route reflectors
     else:
       for n in rrlist:
         if n.name != node.name:
-          node.bgp.neighbors.append(bgp_neighbor(n,n.loopback,'ibgp',True))
+          node.bgp.neighbors.append(bgp_neighbor(n,n.loopback,'ibgp',get_neighbor_rr(n)))
 
     #
     # EBGP sessions - iterate over all links, find adjacent nodes
@@ -67,7 +71,11 @@ class BGP(Module):
         if not "bgp" in neighbor:
           continue
         if neighbor.bgp.get("as") and neighbor.bgp.get("as") != node.bgp.get("as"):
-          node.bgp.neighbors.append(bgp_neighbor(neighbor,ngb_ifdata,'ebgp',None))
+          extra_data = Box({})
+          if "unnumbered" in l:
+            extra_data.unnumbered = True
+            extra_data.ifindex = l.ifindex
+          node.bgp.neighbors.append(bgp_neighbor(neighbor,ngb_ifdata,'ebgp',extra_data))
 
     # Set bgp.advertise flag on stub links
     #

@@ -6,8 +6,9 @@ The BGP configuration module configures BGP routing process and BGP neighbors.
 
 You can use these node-level parameters to influence the final BGP configuration:
 
-* **bgp.as** -- AS number (can be specified as a global value)
+* **bgp.as**: AS number -- specified on a node, or as default global value (propagated to all nodes without a specified AS number)
 * **bgp.rr** -- the node is BGP route reflector within its autonomous system.
+* **bgp.rr_list**: global list of route reflectors across all autonomous systems in the lab topology. This list is used solely as a convenient mechanism to set **bgp.rr** node attribute. See [IBGP example](bgp_example/ibgp.md) for details.
 * **bgp.next_hop_self** -- use *next-hop-self* on IBGP sessions. Can be specified as a global value; system default is **true**.
 
 You can also use these link-level parameters to influence the BGP prefix advertisements:
@@ -76,6 +77,27 @@ See the [IBGP Data Center Fabric](bgp_example/ibgp.md) example for more details.
 * Whenever multiple nodes connected to the same link use different AS numbers, you'll get a full mesh of EBGP sessions between them.
 
 See the [Simple BGP Example](bgp_example/simple.md) and [EBGP Data Center Fabric](bgp_example/multias.md) example for more details.
+
+#### Notes on Unnumbered EBGP Sessions
+
+Unnumbered EBGP sessions are supported by the data model, but not by configuration templates. The transformed data model includes **unnumbered** and **ifindex** elements on EBGP neighbors reachable over unnumbered interfaces -- compare a regular EBGP neighbor (L2) with an unnumbered EBGP neighbor (L1):
+
+```
+- bgp:
+    as: 65001
+    neighbors:
+    - as: 65100
+      ifindex: 1
+      name: l1
+      type: ebgp
+      unnumbered: true
+    - as: 65101
+      ipv4: 172.16.0.1
+      name: l2
+      type: ebgp
+```
+
+The transformed data model gives you enough information to create Cumulus-style BGP neighbor statements.
 
 ### Interaction with IGP
 

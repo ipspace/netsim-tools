@@ -156,7 +156,7 @@ router bgp 65000
   neighbor 10.0.0.4 activate
 ```
 
-### Complete network topology:
+### Complete network topology
 
 ```
 #

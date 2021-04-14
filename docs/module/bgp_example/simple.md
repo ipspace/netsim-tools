@@ -190,7 +190,7 @@ router ospf 1
    interface unnumbered hello mask tx 0.0.0.0
 ```
 
-### Complete network topology:
+### Complete network topology
 
 ```
 module: [ bgp,ospf ]
