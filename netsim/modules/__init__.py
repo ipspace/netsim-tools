@@ -48,7 +48,11 @@ def merge_node_module_params(topology):
     if 'module' in n:
       for m in n.module:
         if m in topology:
-          n[m] = topology[m] + n[m]
+          global_copy = Box(topology[m])
+          if "no_propagate" in topology.defaults.get(m,{}):
+            for remove_key in topology.defaults[m].no_propagate:
+              global_copy.pop(remove_key,None)
+          n[m] = global_copy + n[m]
 
 '''
 adjust_modules: last phase of global module adjustments
@@ -56,6 +60,7 @@ adjust_modules: last phase of global module adjustments
 * add node-specific modules into global list of modules after the node
   modules have been set to default global values
 * merge default settings with global settings
+* copy global settings into node settings (apart from no_propagate attributes)
 '''
 def adjust_global_modules(topology):
   mod_dict = { m : None for m in topology.get('module',[]) }
@@ -66,6 +71,20 @@ def adjust_global_modules(topology):
   if not mod_dict:
     return
 
+  """
+  Merge global module parameters with node module parameters
+
+  A caveat: don't merge key specified in defaults "no_propagate" list --
+  forces us to do a deep copy of global parameters, and then eliminate
+  the ones we don't want. 
+  
+  We couldn't just iterate because we need a deep merge, and we can't remove
+  the no_propagate parameters from the global settings because they might be
+  needed in further transformation code.
+
+  Potential optimization: build a module cache instead of computing the deep
+  copy for every node. Meh.
+  """
   topology.module = list(mod_dict.keys())
   for m in topology.module:
     if topology.defaults.get(m):
