@@ -100,3 +100,13 @@ class BGP(Module):
 
     if len(as_set) > 1 and not link.get("role"):
       link.role = ebgp_role
+
+  """
+  Node pre-transform: set bgp.rr node attribute to _true_ if the node name is in the
+  global bgp.rr attribute. Also, delete the global bgp.rr attribute so it's not propagated
+  down to nodes
+  """
+  def node_pre_transform(self,node,topology):
+    if "rr_list" in topology.get("bgp",{}):
+      if node.name in topology.bgp.rr_list:
+        node.bgp.rr = True

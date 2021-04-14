@@ -22,7 +22,7 @@ addressing:
 bgp:
   ebgp_role: external
   advertise_roles: [ stub ]
-  no_propagate: [ ebgp_role,advertise_roles ]
+  no_propagate: [ ebgp_role,advertise_roles,rr_list ]
   next_hop_self: true
 
 #
