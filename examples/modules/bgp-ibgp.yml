@@ -9,6 +9,7 @@ addressing:
 
 bgp:
   as: 65000
+  rr_list: [ s1, s2 ]
 ospf:
   area: 0.0.0.0
 defaults:
@@ -16,11 +17,6 @@ defaults:
 
 nodes:
   s1:
-    bgp:
-      rr: true
-  s2:
-    bgp:
-      rr: true
   l1:
   l2:
     device: eos
