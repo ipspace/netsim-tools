@@ -49,6 +49,56 @@ links:
 ```
 
 
+### Resulting Data Structures
+
+This is the BGP-related part of transformed node data on PE1. It's extremely easy to generate BGP configuration out of it:
+
+```
+- bgp:
+    as: 65000
+    neighbors:
+    - as: 65000
+      ipv4: 10.0.0.2
+      name: pe1
+      type: ibgp
+    - as: 65001
+      ipv4: 10.1.0.5
+      name: e1
+      type: ebgp
+    next_hop_self: true
+```
+
+Interface information on PE1 includes the link role (*external*) which the OSPF configuration module uses to determine whether to include an interface in the OSPF process.
+
+```
+  links:
+  - ifindex: 1
+    ifname: GigabitEthernet0/1
+    ipv4: 10.1.0.2/30
+    linkindex: 1
+    name: pe2 -> pe1
+    neighbors:
+      pe1:
+        ifname: GigabitEthernet0/1
+        ipv4: 10.1.0.1/30
+    remote_id: 2
+    remote_ifindex: 1
+    type: p2p
+  - ifindex: 2
+    ifname: GigabitEthernet0/2
+    ipv4: 10.1.0.6/30
+    linkindex: 2
+    name: pe2 -> e1
+    neighbors:
+      e1:
+        ifname: Ethernet1
+        ipv4: 10.1.0.5/30
+    remote_id: 1
+    remote_ifindex: 1
+    role: external
+    type: p2p
+```
+
 ### Resulting Device Configurations
 
 The above topology generates the following device configurations
