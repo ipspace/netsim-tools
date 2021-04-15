@@ -38,7 +38,7 @@ nodes:
     device: eos
 ```
 
-The switches are linked in a leaf-and-spine fabric:
+The switches are connected into a leaf-and-spine fabric:
 
 ```
 links:

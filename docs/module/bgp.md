@@ -76,7 +76,7 @@ See the [IBGP Data Center Fabric](bgp_example/ibgp.md) example for more details.
 **EBGP sessions**
 * Whenever multiple nodes connected to the same link use different AS numbers, you'll get a full mesh of EBGP sessions between them.
 
-See the [Simple BGP Example](bgp_example/simple.md) and [EBGP Data Center Fabric](bgp_example/multias.md) example for more details.
+See the [Simple BGP Example](bgp_example/simple.md) and [EBGP Data Center Fabric](bgp_example/ebgp.md) example for more details.
 
 #### Notes on Unnumbered EBGP Sessions
 
@@ -113,5 +113,5 @@ BGP transformation module can set link *role* on links used for EBGP sessions. T
 
    bgp_example/simple.md
    bgp_example/ibgp.md
-   bgp_example/multias.md
+   bgp_example/ebgp.md
 ```
