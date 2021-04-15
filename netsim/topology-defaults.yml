@@ -24,7 +24,17 @@ bgp:
   advertise_roles: [ stub ]
   no_propagate: [ ebgp_role,advertise_roles,rr_list ]
   next_hop_self: true
+  attributes:
+    global: [ as, next_hop_self, rr_list ]
+    node: [ as, next_hop_self, rr ]
+    link: [ advertise ]
 
+ospf:
+  attributes:
+    global: [ area, process ]
+    node: [ area, process, id ]
+    link: [ cost ]
+    link_node: [ cost ]
 #
 # Provider defaults
 #

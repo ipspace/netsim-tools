@@ -28,17 +28,14 @@ def transform(topology):
   common.exit_on_error()
 
   addressing.setup(topology,topology.defaults)
-  modules.adjust_modules(topology)
-  modules.node_transform("pre_transform",topology)
-  modules.link_transform("pre_transform",topology)
+  modules.pre_transform(topology)
 
   ndict = augment.nodes.transform(topology,topology.defaults,topology.pools)
   common.exit_on_error()
   if 'links' in topology:
     augment.links.transform(topology.links,topology.defaults,ndict,topology.pools)
 
-  modules.node_transform("post_transform",topology)
-  modules.link_transform("post_transform",topology)
+  modules.post_transform(topology)
   common.exit_on_error()
   del topology.pools
   del topology.Provider
