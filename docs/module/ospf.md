@@ -1,6 +1,13 @@
 # OSPF Configuration Module
 
-The OSPF configuration module configures OSPF routing process.
+This configuration module configures OSPF routing process on Cisco IOS, Cisco Nexus-OS, Arista EOS, Junos, and ArcOS.
+
+Supported features:
+
+* Multi-area deployment
+* Per-link cost and asymmetric costs
+* Unnumbered point-to-point interfaces
+* Passive interfaces
 
 ### Node Parameters
 

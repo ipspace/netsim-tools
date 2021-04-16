@@ -1,6 +1,16 @@
 # BGP Configuration Module
 
-The BGP configuration module configures BGP routing process and BGP neighbors.
+This configuration module configures BGP routing process and BGP neighbors on Cisco IOS, Cisco Nexus-OS, Arista EOS and Junos.
+
+Supported features:
+
+* IBGP sessions between loopback interfaces
+* Direct EBGP sessions
+* Multiple autonomous systems
+* BGP route reflectors
+* Next-hop-self control on IBGP sessions
+* Configurable link prefix advertisement
+* Interaction with OSPF or IS-IS (IGP is disabled on external links)
 
 ### BGP Configuration Parameters
 
