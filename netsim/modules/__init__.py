@@ -44,7 +44,7 @@ def pre_transform(topology):
   link_transform("pre_transform",topology)
 
 """
-post_transform: 
+post_transform:
   execute module-specific code after the main link- and node
   transformations has completed
 """
@@ -74,9 +74,9 @@ def merge_node_module_params(topology):
       for m in n.module:
         if m in topology:
           global_copy = Box(topology[m])
-          no_propagate = ["attributes"]
+          no_propagate = ["attributes","requires"]
           if "no_propagate" in topology.defaults.get(m,{}):
-            no_propagate = topology.defaults[m].no_propagate
+            no_propagate.extend(topology.defaults[m].no_propagate)
           for remove_key in no_propagate:
             global_copy.pop(remove_key,None)
           if len(global_copy):
@@ -104,8 +104,8 @@ def adjust_global_modules(topology):
 
   A caveat: don't merge key specified in defaults "no_propagate" list --
   forces us to do a deep copy of global parameters, and then eliminate
-  the ones we don't want. 
-  
+  the ones we don't want.
+
   We couldn't just iterate because we need a deep merge, and we can't remove
   the no_propagate parameters from the global settings because they might be
   needed in further transformation code.
@@ -114,18 +114,16 @@ def adjust_global_modules(topology):
   copy for every node. Meh.
   """
   topology.module = list(mod_dict.keys())
-  for m in topology.module:
-    if topology.defaults.get(m):
-      default_copy = Box(topology.defaults[m])
-      no_propagate = default_copy.get("no_propagate", [ "attributes" ])
-      for remove_key in no_propagate:
-        default_copy.pop(remove_key,None)
+  for m in topology.module:                                       # Iterate over all configured modules
+    if topology.defaults.get(m):                                  # Does the module have defaults?
+      default_copy = Box(topology.defaults[m])                    # ... oh, it does. Copy them (we're gonna clobber them)
+      no_propagate = ["attributes","requires","no_propagate"]     # Always remove these default attributes
+      no_propagate.extend(default_copy.get("no_propagate", []))   # ... and whatever the module wishes to be removed
+      for remove_key in no_propagate:                             # We got the list of unwanted attributes.
+        default_copy.pop(remove_key,None)                         # ... remove them with extreme prejudice
 
-      default_copy.pop('no_propagate',None)
-      default_copy.pop('attributes',None)
-
-      if len(default_copy):
-        topology[m] = default_copy + topology[m]
+      if len(default_copy):                        # Anything left? Let's merge it with existing settings
+        topology[m] = default_copy + topology[m]   # Have to use this convoluted way to prevent generating empty dict
 
 '''
 adjust_modules: somewhat intricate multi-step config module adjustments
@@ -139,6 +137,7 @@ def adjust_modules(topology):
   augment_node_module(topology)
   adjust_global_modules(topology)
   check_module_parameters(topology)
+  check_module_dependencies(topology)
   merge_node_module_params(topology)
 
 """
@@ -196,7 +195,7 @@ def check_module_parameters(topology):
                                                   # ... Does node have link-level module attributes?
                                                   # ... Caveat: l(n) could be None (thus the need for "or")
             for k in l[n][m].keys():              # Iterate over node link-level module-specific attributes
-              if not k in mod_attr[m].link_node:  # If the name of an attribute is not in the list of allowed 
+              if not k in mod_attr[m].link_node:  # If the name of an attribute is not in the list of allowed
                                                   # ... link-level node attributes report error
                 common.error("Node %s has invalid attribute %s for module %s on link %s" % (n,k,m,l),common.IncorrectValue)
 
@@ -213,6 +212,19 @@ def parse_module_attributes(a):
       "link_node": a
     }
   return attr
+
+"""
+check_module_dependencies:
+
+For every module used by the topology, check is the module has "requires" attribute, and if
+it does, check that everything in that list is also in the topology modules list.
+"""
+def check_module_dependencies(topology):
+  for m in topology.get("modules",[]):              # Use this format in case we don't use any modules
+    if "requires" in topology.defaults.get(m,{}):   # Fancy workaround to avoid generating empty dict
+      for rqm in topology.defaults[m].requires:     # Loop over prerequisites
+        if not rqm in topology.modules:             # Now we can be explicit - we know topology.modules exists
+          common.error("Module %s requires module %s which is not enabled in your topology" % (m,rqm))
 
 """
 Callback transformation routines

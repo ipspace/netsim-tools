@@ -43,6 +43,9 @@ ospf:
     node: [ area, process, id ]
     link: [ cost, area ]
 
+sr:
+  requires: [ isis ]
+
 #
 # Provider defaults
 #
