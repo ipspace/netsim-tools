@@ -1,4 +1,5 @@
 router bgp {{ bgp.as }}
+  bgp advertise-inactive
 {% for n in bgp.neighbors if n.ipv4 is defined %}
   neighbor {{ n.ipv4 }} remote-as {{ n.as }}
   neighbor {{ n.ipv4 }} description {{ n.name }}
