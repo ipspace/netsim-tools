@@ -33,8 +33,8 @@ ospf:
   attributes:
     global: [ area, process ]
     node: [ area, process, id ]
-    link: [ cost ]
-    link_node: [ cost ]
+    link: [ cost, area ]
+
 #
 # Provider defaults
 #
