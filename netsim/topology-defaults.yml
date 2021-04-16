@@ -29,6 +29,14 @@ bgp:
     node: [ as, next_hop_self, rr ]
     link: [ advertise ]
 
+isis:
+  area: 49.0001
+  type: level-2
+  attributes:
+    global: [ area, type ]
+    node: [ area, net, type ]
+    link: [ metric, cost, type ]
+
 ospf:
   attributes:
     global: [ area, process ]
