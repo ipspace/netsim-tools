@@ -4,6 +4,10 @@ no ip domain-lookup
 !
 feature lldp
 !
+{% for k,v in hostvars.items() if v.loopback.ipv4 is defined %}
+ip host {{ k }} {{ v.loopback.ipv4|ipaddr('address') }}
+{% endfor %}
+!
 interface loopback0
 {% if 'ipv4' in loopback %}
  ip address {{ loopback.ipv4 }}
