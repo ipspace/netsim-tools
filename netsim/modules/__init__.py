@@ -16,6 +16,10 @@ from .. import common
 from ..callback import Callback
 from ..augment.nodes import rebuild_nodes_map
 
+# List of attributes we don't want propagated from defaults to global/node
+#
+no_propagate_list = ["attributes","requires","supported_on","no_propagate"]
+
 class Module(Callback):
 
   def __init__(self,data):
@@ -49,6 +53,7 @@ post_transform:
   transformations has completed
 """
 def post_transform(topology):
+  check_supported_node_devices(topology)       # A bit late, but we can do this check only after node data has been adjusted
   node_transform("post_transform",topology)
   link_transform("post_transform",topology)
 
@@ -63,18 +68,36 @@ def augment_node_module(topology):
     if not 'module' in n:
       n.module = module
 
+# Check whether the modules defined on individual nodes are valid
+# and supported
+#
+def check_supported_node_devices(topology):
+  for n in topology.nodes:
+    for m in n.get("module"):                                   # Iterate across all modules used by a node
+      if not m in topology.defaults:                            # Do we know about the module?
+        common.error("Unknown module %s used by node %s" %
+                     (m,n.name),common.IncorrectValue)
+        continue
+      if "supported_on" in topology.defaults[m]:                # Does the module have list of supported devices?
+        if not n.device in topology.defaults[m].supported_on:   # ... and is the device on the list?
+          common.error("Device type %s used by node %s is not supported by module %s" %
+                       (n.device,n.name,m),common.IncorrectValue)
+          continue
+
 # Merge global module parameters with per-node module parameters
 #
 # Remove "no_propagate" values (default: "attributes")
 # before merging the global settings
 #
 def merge_node_module_params(topology):
+  global no_propagate_list
+
   for n in topology.nodes:
     if 'module' in n:
       for m in n.module:
         if m in topology:
           global_copy = Box(topology[m])
-          no_propagate = ["attributes","requires"]
+          no_propagate = list(no_propagate_list)              # Make sure we're using a fresh copy of the list
           if "no_propagate" in topology.defaults.get(m,{}):
             no_propagate.extend(topology.defaults[m].no_propagate)
           for remove_key in no_propagate:
@@ -113,11 +136,13 @@ def adjust_global_modules(topology):
   Potential optimization: build a module cache instead of computing the deep
   copy for every node. Meh.
   """
+  global no_propagate_list
+
   topology.module = list(mod_dict.keys())
   for m in topology.module:                                       # Iterate over all configured modules
     if topology.defaults.get(m):                                  # Does the module have defaults?
       default_copy = Box(topology.defaults[m])                    # ... oh, it does. Copy them (we're gonna clobber them)
-      no_propagate = ["attributes","requires","no_propagate"]     # Always remove these default attributes
+      no_propagate = list(no_propagate_list)                      # Always remove these default attributes (and make a fresh copy of the list)
       no_propagate.extend(default_copy.get("no_propagate", []))   # ... and whatever the module wishes to be removed
       for remove_key in no_propagate:                             # We got the list of unwanted attributes.
         default_copy.pop(remove_key,None)                         # ... remove them with extreme prejudice
@@ -150,7 +175,7 @@ parse_module_attributes:
 
 Accept list or dict as module attributes. List format applies to
 all levels (global, node, link, node-on-link), dict format specifies
-lists for every level. 
+lists for every level.
 
 Global attributes are used as default value for node attributes.
 Link attributes are used as default value for node-on-link attributes.
@@ -170,7 +195,7 @@ def check_module_parameters(topology):
 
   for n in topology.nodes:               # Inspect all nodes
     for m in n.get("module",[]):         # Iterate over all node modules
-      if mod_attr[m] and m in n:         # Does the current module have a list of attributes? 
+      if mod_attr[m] and m in n:         # Does the current module have a list of attributes?
                                          # ...Does node have module attribute?
         for k in n[m].keys():            # Iterate over node-level module-specific attributes
           if not k in mod_attr[m].node:  # If the name of an attribute is not in the list of allowed
@@ -220,10 +245,10 @@ For every module used by the topology, check is the module has "requires" attrib
 it does, check that everything in that list is also in the topology modules list.
 """
 def check_module_dependencies(topology):
-  for m in topology.get("modules",[]):              # Use this format in case we don't use any modules
+  for m in topology.get("module",[]):               # Use this format in case we don't use any modules
     if "requires" in topology.defaults.get(m,{}):   # Fancy workaround to avoid generating empty dict
       for rqm in topology.defaults[m].requires:     # Loop over prerequisites
-        if not rqm in topology.modules:             # Now we can be explicit - we know topology.modules exists
+        if not rqm in topology.module:              # Now we can be explicit - we know topology.modules exists
           common.error("Module %s requires module %s which is not enabled in your topology" % (m,rqm))
 
 """
