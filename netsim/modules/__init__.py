@@ -78,7 +78,8 @@ def check_supported_node_devices(topology):
         common.error("Unknown module %s used by node %s" %
                      (m,n.name),common.IncorrectValue)
         continue
-      if "supported_on" in topology.defaults[m]:                # Does the module have list of supported devices?
+      mod_def = topology.defaults[m]                            # Get module defaults
+      if mod_def and "supported_on" in mod_def :                # Are they sane and do they include supported device list?
         if not n.device in topology.defaults[m].supported_on:   # ... and is the device on the list?
           common.error("Device type %s used by node %s is not supported by module %s" %
                        (n.device,n.name,m),common.IncorrectValue)
@@ -139,16 +140,21 @@ def adjust_global_modules(topology):
   global no_propagate_list
 
   topology.module = list(mod_dict.keys())
-  for m in topology.module:                                       # Iterate over all configured modules
-    if topology.defaults.get(m):                                  # Does the module have defaults?
-      default_copy = Box(topology.defaults[m])                    # ... oh, it does. Copy them (we're gonna clobber them)
-      no_propagate = list(no_propagate_list)                      # Always remove these default attributes (and make a fresh copy of the list)
-      no_propagate.extend(default_copy.get("no_propagate", []))   # ... and whatever the module wishes to be removed
-      for remove_key in no_propagate:                             # We got the list of unwanted attributes.
-        default_copy.pop(remove_key,None)                         # ... remove them with extreme prejudice
+  for m in topology.module:                                     # Iterate over all configured modules
+    if not m in topology.defaults:                              # Does this module have defaults?
+      continue                                                  # Nope. Weird, but doesn't matter right now.
+    mod_def = topology.defaults[m]
+    if not isinstance(mod_def,dict):                               # Are module defaults a dict?
+      common.fatal("Defaults for module %s should be a dict" % m)  # Nope? Too bad, crash right now, we can't live like that...
 
-      if len(default_copy):                        # Anything left? Let's merge it with existing settings
-        topology[m] = default_copy + topology[m]   # Have to use this convoluted way to prevent generating empty dict
+    default_copy = Box(mod_def)                                 # Got module defaults. Now copy them (we're gonna clobber them)
+    no_propagate = list(no_propagate_list)                      # Always remove these default attributes (and make a fresh copy of the list)
+    no_propagate.extend(default_copy.get("no_propagate", []))   # ... and whatever the module wishes to be removed
+    for remove_key in no_propagate:                             # We got the list of unwanted attributes.
+      default_copy.pop(remove_key,None)                         # ... remove them with extreme prejudice
+
+    if len(default_copy):                        # Anything left? Let's merge it with existing settings
+      topology[m] = default_copy + topology[m]   # Have to use this convoluted way to prevent generating empty dict
 
 '''
 adjust_modules: somewhat intricate multi-step config module adjustments
@@ -184,14 +190,16 @@ Link attributes are used as default value for node-on-link attributes.
 def check_module_parameters(topology):
   mod_attr = Box({},default_box=True,box_dots=True)
 
-  for m in topology.get("module",[]):
-    if "attributes" in topology.defaults.get(m,{}):
-      mod_attr[m] = parse_module_attributes(topology.defaults[m].attributes)
+  for m in topology.get("module",[]):                      # Iterate over all active modules
+    mod_def = topology.defaults.get(m,{})                  # Get module defaults
+    if mod_def:                                            # Did we get something meaningful?
+      if "attributes" in topology.defaults.get(m,{}):      # ... and does it include "attributes"?
+        mod_attr[m] = parse_module_attributes(topology.defaults[m].attributes)
 
-      if m in topology:
-        for k in topology[m].keys():
-          if not k in mod_attr[m]["global"]:
-            common.error("Invalid global %s attribute %s" % (m,k),common.IncorrectValue)
+        if topology.get(m,{}):                             # Now we can start: are there global module parameters in topology?
+          for k in topology[m].keys():                     # Got them - iterate over them
+            if not k in mod_attr[m]["global"]:             # Did we get a parameter that is not in global attributes? Jeez... barf
+              common.error("Invalid global %s attribute %s" % (m,k),common.IncorrectValue)
 
   for n in topology.nodes:               # Inspect all nodes
     for m in n.get("module",[]):         # Iterate over all node modules
@@ -246,10 +254,12 @@ it does, check that everything in that list is also in the topology modules list
 """
 def check_module_dependencies(topology):
   for m in topology.get("module",[]):               # Use this format in case we don't use any modules
-    if "requires" in topology.defaults.get(m,{}):   # Fancy workaround to avoid generating empty dict
-      for rqm in topology.defaults[m].requires:     # Loop over prerequisites
-        if not rqm in topology.module:              # Now we can be explicit - we know topology.modules exists
-          common.error("Module %s requires module %s which is not enabled in your topology" % (m,rqm))
+    mod_def = topology.defaults.get(m,{})           # Get module defaults
+    if mod_def:                                     # Are they meaningful?
+      if "requires" in mod_def:                     # Do they include list of required modules?
+        for rqm in topology.defaults[m].requires:   # Loop over prerequisites
+          if not rqm in topology.module:            # Now we can be explicit - we know topology.modules exists
+            common.error("Module %s requires module %s which is not enabled in your topology" % (m,rqm))
 
 """
 Callback transformation routines
