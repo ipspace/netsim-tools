@@ -125,28 +125,3 @@ router isis Gandalf
    segment-routing mpls
       no shutdown
 ```
-
-#### R3 (Cisco Nexus OS)
-
-```
-feature isis
-!
-router isis Gandalf
-  log-adjacency-changes
-  is-type level-2
-  hostname dynamic
-  net 49.0002.0000.0000.0003.00
-  address-family ipv4 unicast
-!
-interface Loopback0
-  ip router isis Gandalf
-!
-interface Ethernet1/1
-  ip router isis Gandalf
-  isis passive-interface level-1-2
-!
-interface Ethernet1/2
-  ip router isis Gandalf
-  isis metric 30 level-1
-  isis metric 30 level-2
-```
