@@ -19,3 +19,4 @@ class ISIS(Module):
       for l in node.links:        # Scan all links
         if af in l:               # Do we have AF enabled on any of them?
           node.isis[af] = True    # Found it - we need it in IS-IS
+          continue
