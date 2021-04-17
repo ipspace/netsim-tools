@@ -25,7 +25,7 @@ bgp:
   no_propagate: [ ebgp_role,advertise_roles,rr_list ]
   next_hop_self: true
   attributes:
-    global: [ as, next_hop_self, rr_list ]
+    global: [ as, next_hop_self, rr_list, ebgp_role ]
     node: [ as, next_hop_self, rr ]
     link: [ advertise ]
 
