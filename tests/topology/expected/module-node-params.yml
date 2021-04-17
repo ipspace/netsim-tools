@@ -7,7 +7,6 @@ input:
 module:
 - ospf
 - bgp
-- evpn
 name: input
 nodes:
 - box: cisco/iosv
@@ -41,7 +40,6 @@ nodes:
     mac: 08-4F-A9-00-00-02
   module:
   - bgp
-  - evpn
   name: r2
 ospf:
   area: 0.0.0.0
