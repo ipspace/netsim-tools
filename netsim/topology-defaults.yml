@@ -45,6 +45,7 @@ ospf:
 
 sr:
   requires: [ isis ]
+  supported_on: [ csr, eos ]
 
 #
 # Provider defaults
