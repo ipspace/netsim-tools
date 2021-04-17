@@ -10,10 +10,15 @@ addressing:
 bgp:
   as: 65000
   rr_list: [ s1, s2 ]
+  ebgp_role: "" # Trigger EBGP role test coverage
+
 ospf:
   area: 0.0.0.0
 defaults:
+  inventory: min # Trigger inventory dump
   device: nxos
+  bgp:
+   ebgp_role: "" # Trigger EBGP role test coverage
 
 nodes:
   s1:

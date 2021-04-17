@@ -1,5 +1,6 @@
 bgp:
   as: 65000
+  ebgp_role: ''
   next_hop_self: true
   rr_list:
   - s1

@@ -15,6 +15,8 @@ addressing:
     prefix: 30
   stub:
     ipv6: 2001:db8:2::/48
+  unnumbered:
+    unnumbered: True
 
 defaults:
   device: iosv
@@ -37,13 +39,20 @@ nodes:
 - name: e2
   bgp:
     as: 65002
+- name: nar           # Non-BGP node to test EBGP link with non-BGP neighbor scenario
+  module: []
 
 links:
 - rr1-pe1
 - rr1-pe2
 - rr2-pe1
 - rr2-pe2
-- pe1-e1
+- pe1:
+  e1:
+  role: unnumbered    # Trigger unnumbere BGP coverage
 - pe2-e2
 - e1:
-- e2:
+    bgp:
+      advertise: True
+- e2
+- e2-nar
