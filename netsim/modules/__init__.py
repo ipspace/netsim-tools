@@ -73,7 +73,7 @@ def augment_node_module(topology):
 #
 def check_supported_node_devices(topology):
   for n in topology.nodes:
-    for m in n.get("module"):                                   # Iterate across all modules used by a node
+    for m in n.get("module",[]):                                # Iterate across all modules used by a node
       if not m in topology.defaults:                            # Do we know about the module?
         common.error("Unknown module %s used by node %s" %
                      (m,n.name),common.IncorrectValue)
