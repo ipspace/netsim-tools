@@ -22,6 +22,8 @@ The SR-MPLS module has no configurable parameters.
 
 We want to create a four-router multi-vendor SR-MPLS network.
 
+![](SR-Simple.png)
+
 All devices run IS-IS and SR-MPLS:
 ```
 module: [ sr,isis ]
