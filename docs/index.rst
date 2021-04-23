@@ -21,6 +21,10 @@ An overview of tools:
   Ansible playbook that creates devices configuration snippets (including configuration module snippets) without deploying them
   on network devices.
 
+**collect-configs.ansible**
+  Using Ansible fact gathering or other device-specific Ansible modules, collects device configurations and saves them in
+  specified directory (default: **config**).
+
 **config.ansible**
   Applies any set of custom Jinja2 configuration templates to network devices. Includes support for platform-specific configuration templates.
 
@@ -47,6 +51,7 @@ Libvirt-specific tools
    module-reference.md
    configs.md
    platforms.md
+   contribute.md
    release.rst
 
 
