@@ -124,7 +124,7 @@ def adjust_global_modules(topology):
     return
 
   """
-  Merge global module parameters with node module parameters
+  Merge default module parameters with global module parameters
 
   A caveat: don't merge key specified in defaults "no_propagate" list --
   forces us to do a deep copy of global parameters, and then eliminate
@@ -133,9 +133,6 @@ def adjust_global_modules(topology):
   We couldn't just iterate because we need a deep merge, and we can't remove
   the no_propagate parameters from the global settings because they might be
   needed in further transformation code.
-
-  Potential optimization: build a module cache instead of computing the deep
-  copy for every node. Meh.
   """
   global no_propagate_list
 
@@ -169,6 +166,9 @@ def adjust_modules(topology):
   adjust_global_modules(topology)
   check_module_parameters(topology)
   check_module_dependencies(topology)
+  module_transform("pre_default",topology)
+  node_transform("pre_default",topology)
+  link_transform("pre_default",topology)
   merge_node_module_params(topology)
 
 """
@@ -271,6 +271,14 @@ Note: mod_load is a global cache of loaded modules
 """
 
 mod_load = {}
+
+def module_transform(method,topology):
+  global mod_load
+
+  for m in topology.get('module',[]):
+    if not mod_load.get(m):
+      mod_load[m] = Module.load(m,topology.get(m))
+    mod_load[m].call("module_"+method,topology)
 
 def node_transform(method,topology):
   global mod_load

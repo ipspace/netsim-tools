@@ -10,6 +10,7 @@ from box import Box
 LOGGING=False
 VERBOSE=False
 RAISE_ON_ERROR=False
+err_count = 0
 
 class MissingValue(Warning):
   pass
@@ -28,8 +29,6 @@ def fatal(text,module='topology'):
     raise FatalError(text)
   else:
     sys.exit(1)
-
-err_count = 0
 
 def error(text,category=UserWarning,module='topology'):
   global err_count
