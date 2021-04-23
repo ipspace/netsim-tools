@@ -4,32 +4,79 @@ This configuration module configures BGP routing process and BGP neighbors on Ci
 
 Supported features:
 
-* IBGP sessions between loopback interfaces
-* Direct EBGP sessions
 * Multiple autonomous systems
+* Direct (single-hop) EBGP sessions
+* IBGP sessions between loopback interfaces
 * BGP route reflectors
 * Next-hop-self control on IBGP sessions
 * Configurable link prefix advertisement
 * Interaction with OSPF or IS-IS (IGP is disabled on external links)
 
-### BGP Configuration Parameters
+You could use *global* or *per-node* parameters to configure BGP autonomous systems and route reflectors (you expected tons of nerd knobs in a BGP implementation, didn't you?):
 
-You can use these node-level parameters to influence the final BGP configuration:
+* Using a global **as_list**, specify members and route reflectors in an autonomous system.
+* Specify BGP AS and route reflector status of individual nodes with **bgp.as** and **bgp.rr** node parameters.
+
+### Global BGP Configuration Parameters
+
+Use **bgp.as_list** global parameter to specify a dictionary of autonomous systems. Every autonomous system should have two elements:
+
+* **members** -- list of nodes within the autonomous system
+* **rr** -- list of route reflectors within the autonomous system.
+
+For example, use the following configuration to build a core network connected to two external autonomous systems:
+
+```
+bgp:
+  as_list:
+    65000:
+      members: [ rr1, rr2, pe1, pe2 ]
+      rr: [ rr1, rr2 ]
+    65001:
+      members: [ e1 ]
+    65002:
+      members: [ e2 ]
+``` 
+
+When you're building a network with a single BGP autonomous system, it might be simpler to specify the default value of BGP AS number in **bgp.as** parameter instead of listing all nodes within that autonomous system. When using this approach, specify the list of route reflectors in **bgp.rr_list** parameter.
+
+```
+bgp:
+  as: 65000
+  rr_list: [ s1, s2 ]
+```
+
+See [IBGP-over-OSPF Data Center Fabric example](bgp_example/ibgp.md) for details.
+
+#### Advanced Global Configuration Parameters
+
+Advanced global configuration parameters include:
+
+* **advertise_roles** -- list of link types and roles. Links matching any element of the list will be advertised into BGP. See *[Advertised BGP Prefixes](#advertised-bgp-prefixes)* for details.
+* **ebgp_role** -- link role set on links connecting nodes from different autonomous systems. See *[Interaction with IGP](#interaction-with-igp)* for details.
+
+### Node Configuration Parameters
+
+Instead of using a global list of autonomous systems, you could specify a BGP autonomous system and route reflector role on individual nodes using these parameters:
 
 * **bgp.as**: AS number -- specified on a node, or as default global value (propagated to all nodes without a specified AS number)
 * **bgp.rr** -- the node is BGP route reflector within its autonomous system.
-* **bgp.rr_list**: global list of route reflectors across all autonomous systems in the lab topology. This list is used solely as a convenient mechanism to set **bgp.rr** node attribute. See [IBGP example](bgp_example/ibgp.md) for details.
-* **bgp.next_hop_self** -- use *next-hop-self* on IBGP sessions. Can be specified as a global value; system default is **true**.
+* **bgp.next_hop_self** -- use *next-hop-self* on IBGP sessions. This parameter can also be specified as a global value; system default is **true**.
+
+Specifying a BGP autonomous system on individual nodes makes sense when each node uses a different BGP AS. See [EBGP leaf-and-spine fabric example](bgp_example/ebgp.md) for details.
+
+**Notes:**
+* **bgp.as** parameter *must* be specified for every node using BGP configuration module.
+* The node AS number could be derived from the global **bgp.as_list**, from the default (global) value of **bgp.as** parameter, or specified on the node itself. Explore [simple BGP example](bgp_example/simple.md) to see how you can combine global AS number with node AS number.
+* You could enable BGP configuration module globally using `module: [ bgp ]` as a top-level topology element, or for an individual node using `module: [ bgp ]` within node data. See [Segment Routing with BGP topology](https://github.com/ipspace/netsim-examples/blob/master/routing/sr-mpls-bgp/sr%2Bbgp.yml) for an example.
+
+### Link-Level Parameters
 
 You can also use these link-level parameters to influence the BGP prefix advertisements:
 
 * **bgp.advertise** -- The link prefix will be configured with the **network** statement within the BGP process.
 
 See [examples](#examples) for sample usage guidelines.
-
-**Notes:**
-* You *must* specify **bgp.as** parameter for every node using BGP configuration module. The default AS number could be specified as a global parameter. Explore [simple BGP example](bgp_example/simple.md) to see how you can combine global AS number with node AS number.
-* A node is using BGP configuration module if you enable BGP globally (using **module: [ bgp ]** as a top-level topology element) or for a node (using **module: [ bgp ]** within node data).
 
 ### Advertised BGP Prefixes
 
@@ -119,7 +166,7 @@ BGP transformation module can set link *role* on links used for EBGP sessions. T
 
 ```eval_rst
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    bgp_example/simple.md
    bgp_example/ibgp.md

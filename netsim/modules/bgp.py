@@ -40,6 +40,101 @@ def get_neighbor_rr(n):
 
 class BGP(Module):
 
+  """
+  Module pre-default:
+
+  * If the global BGP parameters have as_list attribute, set node AS numbers and node
+    RR flags accordingly
+
+  We could implement this one as node pre_default, but then we'd have to repeatedly
+  scan the AS_list
+  """
+  def module_pre_default(self,topology):
+    if not 'bgp' in topology:                            # Do we have global BGP settings?
+      return
+
+    if not 'as_list' in topology.bgp:                    # Do we have global AS list?
+      return
+
+    if not isinstance(topology.bgp.as_list,dict):
+      common.error(
+        "bgp.as_list should be a dictionary of AS parameters",
+        common.IncorrectValue)
+      return
+    
+    node_data = Box({},default_box=True,box_dots=True)
+    for asn,data in topology.bgp.as_list.items():
+      for n in data.get('members',{}):
+        if not n in topology.nodes_map:
+          common.error(
+            "Invalid node name %s in member list of BGP AS %s" % (n,asn),
+            common.IncorrectValue)
+          continue
+        node_data[n]["as"] = asn
+
+      for n in data.get('rr',{}):
+        if not n in topology.nodes_map:
+          common.error(
+            "Invalid node name %s in route reflector list of BGP AS %s" % (n,asn),
+            common.IncorrectValue)
+          continue
+        if node_data[n]["as"] != asn:
+          common.error(
+            "Node %s is specified as route reflector in AS %s but is not in member list" % (n,asn),
+            common.IncorrectValue)
+          continue
+        node_data[n].rr = True
+
+    for node in topology.nodes:
+      if node.name in node_data:
+        node_as = node.bgp.get("as",None)
+        if node_as and node_as != node_data[node.name]["as"]:
+          common.error(
+            "Node %s has AS %s but is also in member list of AS %s" % (node.name,node_as,node_data[node.name]["as"]),
+            common.IncorrectValue)
+          continue
+
+        node.bgp = node_data[node.name] + node.bgp
+
+  """
+  Node pre-transform: set bgp.rr node attribute to _true_ if the node name is in the
+  global bgp.rr attribute. Also, delete the global bgp.rr attribute so it's not propagated
+  down to nodes
+  """
+  def node_pre_transform(self,node,topology):
+    if "rr_list" in topology.get("bgp",{}):
+      if node.name in topology.bgp.rr_list:
+        node.bgp.rr = True
+
+  """
+  Link pre-transform: Set link role based on BGP nodes attached to the link.
+
+  If the nodes belong to at least two autonomous systems, and the ebgp_role
+  variable is set, set the link role to ebgp_role
+  """
+  def link_pre_transform(self,link,topology):
+    ebgp_role = topology.bgp.get("ebgp_role",None) or topology.defaults.bgp.get("ebgp_role",None)
+    if not ebgp_role:
+      return
+
+    as_set = {}
+    for n in link.keys():
+      if n in topology.nodes_map:
+        if "bgp" in topology.nodes_map[n]:
+          node_as = topology.nodes_map[n].bgp.get("as")
+        as_set[node_as] = True
+
+    if len(as_set) > 1 and not link.get("role"):
+      link.role = ebgp_role
+
+  """
+  Node post-transform: build BGP sessions
+
+  * BGP route reflectors need IBGP session with all other nodes in the same AS
+  * Other nodes need IBGP sessions with all RRs in the same AS
+  * EBGP sessions are established whenever two nodes on the same link have different AS
+  * Links matching 'advertise_roles' get 'advertise' attribute set
+  """
   def node_post_transform(self,node,topology):
     if not "bgp" in node:
       common.error("Node %s has BGP module enabled but no BGP parameters" % node.name)
@@ -88,33 +183,3 @@ class BGP(Module):
         if l.get("type",None) in stub_roles or l.get("role",None) in stub_roles:
           l.bgp.advertise = True
 
-  """
-  Set link role based on BGP nodes attached to the link.
-
-  If the nodes belong to at least two autonomous systems, and the ebgp_role
-  variable is set, set the link role to ebgp_role
-  """
-  def link_pre_transform(self,link,topology):
-    ebgp_role = topology.bgp.get("ebgp_role",None) or topology.defaults.bgp.get("ebgp_role",None)
-    if not ebgp_role:
-      return
-
-    as_set = {}
-    for n in link.keys():
-      if n in topology.nodes_map:
-        if "bgp" in topology.nodes_map[n]:
-          node_as = topology.nodes_map[n].bgp.get("as")
-        as_set[node_as] = True
-
-    if len(as_set) > 1 and not link.get("role"):
-      link.role = ebgp_role
-
-  """
-  Node pre-transform: set bgp.rr node attribute to _true_ if the node name is in the
-  global bgp.rr attribute. Also, delete the global bgp.rr attribute so it's not propagated
-  down to nodes
-  """
-  def node_pre_transform(self,node,topology):
-    if "rr_list" in topology.get("bgp",{}):
-      if node.name in topology.bgp.rr_list:
-        node.bgp.rr = True
